@@ -31,3 +31,17 @@ data class ErrorResponse (
     var code : Int?,
     var message : String?
 )
+
+sealed class LoginBusiness {
+
+    object UserInvalid : BusinessException()
+    object PasswordInvalid : BusinessException()
+    object PasswordNeedSpecialCharacter : BusinessException()
+    object PasswordNeedCapitalizedLetter : BusinessException()
+    object PasswordNeedNumber : BusinessException()
+
+}
+
+abstract class BusinessException : AppException()
+
+sealed class AppException(message: String = "") : RuntimeException(message)

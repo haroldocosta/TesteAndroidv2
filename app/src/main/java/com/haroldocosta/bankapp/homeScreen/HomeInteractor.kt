@@ -15,10 +15,15 @@ import retrofit2.Response
 
 interface HomeInteractorInput {
     fun fetchHomeMetaData(request: HomeRequest?)
+    fun logout(context: Context)
 }
 
 class HomeInteractor : HomeInteractorInput {
     var output: HomePresenterInput? = null
+
+    override fun logout(context: Context) {
+        AuthPreferences(context).logout(context)
+    }
 
     override fun fetchHomeMetaData(request: HomeRequest?) {
         Log.e(TAG, "In method fetchHomeMetaData")

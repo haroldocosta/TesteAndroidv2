@@ -15,7 +15,7 @@ object Validations {
     fun isEmailValid(email: String) = PatternsCompat.EMAIL_ADDRESS.matcher(email).matches()
 
     fun isCpfValid(cpf: String): Boolean {
-        val cpfClean = cpf.replace(".", "").replace("-", "")
+        val cpfClean = cpf.replace(".", "").replace(".", "").replace(".", "").replace(".", "").replace("-", "")
 
         if (cpfClean.length != 11)
             return false

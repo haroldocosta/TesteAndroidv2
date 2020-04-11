@@ -1,5 +1,6 @@
 package com.haroldocosta.bankapp.utils.extensions
 
+import android.util.Log
 import com.squareup.moshi.Moshi
 import java.text.SimpleDateFormat
 import java.util.*
@@ -15,6 +16,13 @@ fun String.dateToFormatBr(): String {
     return SimpleDateFormat("dd/MM/yyyy", localeBrazil()).format(date)
 }
 
+fun String.accountFormatBr(): String {
+    Log.d("accountFormatBr","${this} ${this.substring(0, 2)}")
+    Log.d("accountFormatBr","${this} ${this.substring(2, 6)}")
+    Log.d("accountFormatBr","${this} ${this.substring(7, 9)}")
+    return "${this.substring(0, 2)}.${this.substring(2, 7)}-${this.substring(7, 9)}"
+
+}
 
 inline fun <reified T> Moshi.fromJson(json: String): T? =
     if (json.isNotBlank()) this.adapter(T::class.java).fromJson(json) else null

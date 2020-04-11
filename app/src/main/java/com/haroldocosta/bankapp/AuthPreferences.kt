@@ -38,16 +38,19 @@ class AuthPreferences(context: Context) {
         val editor: Editor = preferences.edit()
         editor.putString(KEY_ACCOUNT_NAME, null)
         editor.commit()
-
-        context?.let {
-            context.startActivity(Intent(context, LoginActivity::class.java))
-            (context as AppCompatActivity).finish()
-        }
+        navigateToLogin(context)
     }
 
     fun navigateToHome(context: Context) {
-        context.startActivity(Intent(context, HomeActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-//        (context as AppCompatActivity).finish()
+        context.startActivity(Intent(context, HomeActivity::class.java)
+            .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+    }
+
+    fun navigateToLogin(context: Context){
+        context.startActivity(Intent(context, LoginActivity::class.java)
+            .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     }
 
     companion object {

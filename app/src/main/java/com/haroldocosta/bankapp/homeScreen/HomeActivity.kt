@@ -13,6 +13,9 @@ import com.haroldocosta.bankapp.AuthPreferences
 import com.haroldocosta.bankapp.R
 import com.haroldocosta.bankapp.StatementViewModel
 import com.haroldocosta.bankapp.loginScreen.UserAccount
+import com.haroldocosta.bankapp.utils.extensions.accountFormatBr
+import com.haroldocosta.bankapp.utils.extensions.dateToFormatBr
+import com.haroldocosta.bankapp.utils.extensions.formatCurrency
 import kotlinx.android.synthetic.main.activity_home.*
 import java.util.*
 
@@ -29,7 +32,7 @@ class HomeActivity : AppCompatActivity(), HomeActivityInput {
     var listOfVMStatements: List<StatementRaw>? = null
     var output: HomeInteractorInput? = null
     var router: HomeRouter? = null
-    var user: UserAccount = null
+    var user: UserAccount? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,18 +42,21 @@ class HomeActivity : AppCompatActivity(), HomeActivityInput {
         fetchMetaData()
         createStatementListView()
         feedHeaderView()
+        onLoginClick()
     }
 
     fun fetchMetaData() { // create Request and set the needed input
         user = AuthPreferences(baseContext).getUserAccount()
-        Log.d(TAG, "fetchMetaData${user.userId.toString()}")
-        val homeRequest = HomeRequest(user.userId)
+        Log.d(TAG, "fetchMetaData${user?.userId.toString()}")
+        val homeRequest = HomeRequest(user?.userId)
         // Call the output to fetch the data
         output!!.fetchHomeMetaData(homeRequest)
     }
 
     fun feedHeaderView() {
-
+        homeUserName.text = user?.name
+        homeAccount.text = "${user?.bankAccount}/${user?.agency?.accountFormatBr()}"
+        homeBalance.text = "${user?.balance?.formatCurrency()}"
     }
 
     private fun createStatementListView() {
@@ -111,15 +117,20 @@ class HomeActivity : AppCompatActivity(), HomeActivityInput {
             val viewHolder = convertView?.tag as ViewHolder
 
             viewHolder.homeStatementItemTitle?.setText(listOfVMStatements!![position].title)
-            viewHolder.homeStatementItemDate?.setText(listOfVMStatements!![position].date)
+            viewHolder.homeStatementItemDate?.setText(listOfVMStatements!![position].date?.dateToFormatBr())
             viewHolder.homeStatementItemDesc?.setText(listOfVMStatements!![position].desc)
-            viewHolder.homeStatementItemValue?.setText(listOfVMStatements!![position].value.toString())
+            viewHolder.homeStatementItemValue?.setText(listOfVMStatements!![position].value?.formatCurrency().toString())
             Log.d(TAG,"getView ${convertView}")
             return convertView
         }
 
         init {
             layoutInflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        }
+    }
+    private fun onLoginClick() {
+        homeLogout?.setOnClickListener {
+            output!!.logout(baseContext)
         }
     }
 

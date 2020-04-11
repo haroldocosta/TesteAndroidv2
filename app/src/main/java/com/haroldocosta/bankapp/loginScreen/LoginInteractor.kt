@@ -4,6 +4,13 @@ import android.content.Context
 import android.util.Log
 import com.haroldocosta.bankapp.AuthPreferences
 import com.haroldocosta.bankapp.RetrofitClient
+import com.haroldocosta.bankapp.utils.validations.Validations
+import com.haroldocosta.bankapp.utils.validations.Validations.hasCapitalizedLetter
+import com.haroldocosta.bankapp.utils.validations.Validations.hasNumber
+import com.haroldocosta.bankapp.utils.validations.Validations.hasSpecialCharacter
+import com.haroldocosta.bankapp.utils.validations.Validations.isCpfValid
+import io.reactivex.Single
+import io.reactivex.Single.error
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,7 +37,6 @@ class LoginInteractor : LoginInteractorInput {
                 override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                     Log.d(TAG, "falha"+t.message)
                 }
-
                 override fun onResponse(
                     call: Call<LoginResponse>,
                     response: Response<LoginResponse>
@@ -42,14 +48,11 @@ class LoginInteractor : LoginInteractorInput {
                         AuthPreferences(context).setUserAccount(response.body()?.userAccount!!)
                         val savedUser = AuthPreferences(context).getUserAccount()
                         Log.d(TAG, savedUser.toString())
-                        if(savedUser != null){
-                            AuthPreferences(context).navigateToHome(context)
-                        }
+                        AuthPreferences(context).navigateToHome(context)
                     }
                 }
             })
     }
-
     companion object {
         var TAG = LoginInteractor::class.java.simpleName
     }
