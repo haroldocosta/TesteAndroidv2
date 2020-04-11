@@ -1,32 +1,33 @@
 package com.haroldocosta.bankapp.loginScreen
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import java.util.*
 
-@JsonClass(generateAdapter = true)
-data class UserAccount(
-    var userId: Int,
-    var name: String,
-    var bankAccount: String,
-    var agency: String,
-    var balance: Double
+
+class LoginModel
+data class LoginViewModel (
+    //TODO - filter to have only the needed data
+    var user: String?,
+    var password: String?
 )
 
-
-@JsonClass(generateAdapter = true)
-data class UserAccountResponse(
-    @property:Json(name = "userAccount")
-    val data: UserAccountRaw?,
-    val error: Throwable
+data class LoginRequest (
+    var loginViewModel: LoginViewModel
 )
 
-
-@JsonClass(generateAdapter = true)
-data class UserAccountRaw(
-    @Json(name = "userId") var userId: Int?,
-    @Json(name = "name") var name: String?,
-    @Json(name = "bankAccount") var bankAccount: String?,
-    @Json(name = "agency") var agency: String?,
-    @Json(name = "balance") var balance: Double?
+data class LoginResponse (
+    var userAccount : UserAccount,
+    var error : ErrorResponse
 )
 
+data class UserAccount (
+    var userId : Int?,
+    var name : String?,
+    var bankAccount : String?,
+    var agency : String?,
+    var balance : Double?
+)
+
+data class ErrorResponse (
+    var code : Int?,
+    var message : String?
+)

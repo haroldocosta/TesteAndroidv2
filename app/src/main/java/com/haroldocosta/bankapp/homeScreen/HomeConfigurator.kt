@@ -1,16 +1,17 @@
-package com.haroldocosta.bankapp.loginScreen
+package com.haroldocosta.bankapp.homeScreen
 
 import java.lang.ref.WeakReference
 
-enum class LoginConfigurator {
+
+enum class HomeConfigurator {
     INSTANCE;
 
-    fun configure(activity: LoginActivity) {
-        val router = LoginRouter()
+    fun configure(activity: HomeActivity) {
+        val router = HomeRouter()
         router.activity = WeakReference(activity)
-        val presenter = LoginPresenter()
-        presenter.output = WeakReference(activity)
-        val interactor = LoginInteractor()
+        val presenter = HomePresenter()
+        presenter.output = WeakReference<HomeActivityInput>(activity)
+        val interactor = HomeInteractor()
         interactor.output = presenter
         if (activity.output == null) {
             activity.output = interactor
