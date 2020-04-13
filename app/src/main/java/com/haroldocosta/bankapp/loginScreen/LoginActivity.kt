@@ -1,10 +1,9 @@
 package com.haroldocosta.bankapp.loginScreen
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.haroldocosta.bankapp.AuthPreferences
 import com.haroldocosta.bankapp.R
 import com.haroldocosta.bankapp.utils.CPFEmailTextWatcher
 import com.haroldocosta.bankapp.utils.validations.Validations
@@ -24,10 +23,6 @@ class LoginActivity  : AppCompatActivity(), LoginActivityInput {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         supportActionBar!!.hide()
-//        val userAccount = AuthPreferences(baseContext).getUserAccount()
-//        if(userAccount != null){
-//            AuthPreferences(baseContext).navigateToHome(this)
-//        }
         user_edit_text.addTextChangedListener(CPFEmailTextWatcher())
         onLoginClick()
         LoginConfigurator.INSTANCE.configure(this)
@@ -40,13 +35,24 @@ class LoginActivity  : AppCompatActivity(), LoginActivityInput {
 
     private fun onLoginClick() {
         login_button?.setOnClickListener {
+            isLoading(true)
             clearErrors()
             val user = user_edit_text?.text?.toString() ?: ""
             val password = password_edit_text?.text?.toString() ?: ""
             val hasError = loginValidates(user, password)
             if(!hasError){
-                output!!.login(user, password, baseContext)
+                output!!.login(user, password, this)
             }
+        }
+    }
+
+    fun isLoading(isLoading: Boolean){
+        if(isLoading){
+            loginProgress.visibility = View.VISIBLE
+            login_button.visibility = View.GONE
+        }else{
+            loginProgress.visibility = View.GONE
+            login_button.visibility = View.VISIBLE
         }
     }
 
@@ -59,33 +65,33 @@ class LoginActivity  : AppCompatActivity(), LoginActivityInput {
         if(user.isBlank() || !Validations.isCpfValid(user) && !Validations.isEmailValid(user)){
             Log.d(TAG,user)
             user_edit_text?.error = getString(R.string.login_validation_error_user_invalid)
+            isLoading(false)
             return true
         }
         if(password.isBlank()){
             Log.d(TAG,password)
             password_edit_text?.error = getString(R.string.login_validation_error_password_invalid)
+            isLoading(false)
             return true
         }
         if(!Validations.hasSpecialCharacter(password)){
             Log.d(TAG,password)
             password_edit_text?.error = getString(R.string.login_validation_error_password_character_special)
+            isLoading(false)
             return true
         }
         if(!Validations.hasCapitalizedLetter(password)){
             Log.d(TAG,password)
             password_edit_text?.error = getString(R.string.login_validation_error_password_capitalized_letter)
+            isLoading(false)
             return true
         }
         if(!Validations.hasNumber(password)){
             Log.d(TAG,password)
             password_edit_text?.error = getString(R.string.login_validation_error_password_number)
+            isLoading(false)
             return true
         }
         return false
     }
 }
-
-//interface HomeRouterOutput {
-//    ArrayList<FlightViewModel> listOfVMFlights = null;
-//     HomeRouter router = null;
-//}

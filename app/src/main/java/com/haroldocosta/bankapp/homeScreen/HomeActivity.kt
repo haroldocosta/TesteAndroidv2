@@ -23,11 +23,6 @@ interface HomeActivityInput {
     fun displayHomeMetaData(viewModel: HomeViewModel)
 }
 
-//interface HomeRouterOutput {
-//    ArrayList<StatementViewModel> listOfVMStatements = null;
-//     HomeRouter router = null;
-//}
-
 class HomeActivity : AppCompatActivity(), HomeActivityInput {
     var listOfVMStatements: List<StatementRaw>? = null
     var output: HomeInteractorInput? = null
@@ -44,8 +39,18 @@ class HomeActivity : AppCompatActivity(), HomeActivityInput {
         feedHeaderView()
         onLoginClick()
     }
+    fun isLoading(isLoading: Boolean){
+        if(isLoading){
+            homeStatementsProgress.visibility = View.VISIBLE
+            homeListView.visibility = View.GONE
+        }else{
+            homeStatementsProgress.visibility = View.GONE
+            homeListView.visibility = View.VISIBLE
+        }
+    }
 
     fun fetchMetaData() { // create Request and set the needed input
+        isLoading(true)
         user = AuthPreferences(baseContext).getUserAccount()
         Log.d(TAG, "fetchMetaData${user?.userId.toString()}")
         val homeRequest = HomeRequest(user?.userId)
@@ -63,14 +68,13 @@ class HomeActivity : AppCompatActivity(), HomeActivityInput {
         val listView = homeListView as ListView
         Log.d(TAG, "createStatementListView")
         listView.adapter = StatementListAdapter()
-
         listView.isClickable = false
     }
 
     override fun displayHomeMetaData(viewModel: HomeViewModel) {
         Log.e(TAG, "displayHomeMetaData() called with: viewModel = [$viewModel]")
         listOfVMStatements = viewModel.statementList
-//        fetchMetaData()
+        isLoading(false)
         createStatementListView()
     }
 

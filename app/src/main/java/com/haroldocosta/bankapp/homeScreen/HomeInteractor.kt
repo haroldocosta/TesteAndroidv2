@@ -26,31 +26,22 @@ class HomeInteractor : HomeInteractorInput {
     }
 
     override fun fetchHomeMetaData(request: HomeRequest?) {
-        Log.e(TAG, "In method fetchHomeMetaData")
-        Log.d(TAG, request?.userId.toString())
         RetrofitClient.instance.getStatements(request?.userId!!)
             .enqueue(object: Callback<HomeResponse> {
                 override fun onFailure(call: Call<HomeResponse>, t: Throwable) {
-                    Log.d(TAG, t.message!!)
                 }
 
                 override fun onResponse(
                     call: Call<HomeResponse>,
                     response: Response<HomeResponse>
                 ) {
-                    Log.d(TAG, response.toString())
-                    Log.d(TAG, response.body()!!.toString())
-                    Log.d(TAG, response.body()?.error?.code.toString())
-
                     if(response.body()?.error?.code == null){
                         val homeResponse: HomeResponse? = response.body()
-                        Log.d(TAG, "response.body()?.error?.code é null")
 
                         val list = homeResponse?.statementList
                         if (null == list || list.isEmpty()) {
                             throw ArrayEmptyException("Empty Statement List")
                         }
-                        Log.d(TAG, "@@@@ ${homeResponse}")
                         output?.presentHomeMetaData(homeResponse)
                     }
                 }

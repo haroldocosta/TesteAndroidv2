@@ -2,23 +2,18 @@ package com.haroldocosta.bankapp.loginScreen
 
 import android.content.Context
 import android.util.Log
+import androidx.core.app.ActivityCompat
 import com.haroldocosta.bankapp.AuthPreferences
 import com.haroldocosta.bankapp.RetrofitClient
-import com.haroldocosta.bankapp.utils.validations.Validations
-import com.haroldocosta.bankapp.utils.validations.Validations.hasCapitalizedLetter
-import com.haroldocosta.bankapp.utils.validations.Validations.hasNumber
-import com.haroldocosta.bankapp.utils.validations.Validations.hasSpecialCharacter
-import com.haroldocosta.bankapp.utils.validations.Validations.isCpfValid
-import io.reactivex.Single
-import io.reactivex.Single.error
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.ref.WeakReference
 
 
 interface LoginInteractorInput {
     fun fetchLoginMetaData(request: LoginRequest?)
-    fun login(user: String, password: String, context: Context)
+    fun login(user: String, password: String, activicy: LoginActivity)
 }
 
 class LoginInteractor : LoginInteractorInput {
@@ -31,11 +26,12 @@ class LoginInteractor : LoginInteractorInput {
         output!!.presentLoginMetaData(loginResponse)
     }
 
-    override fun login(user: String,password: String, context: Context){
+    override fun login(user: String,password: String, activity: LoginActivity){
         RetrofitClient.instance.login(user, password)
             .enqueue(object: Callback<LoginResponse>{
                 override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                     Log.d(TAG, "falha"+t.message)
+                    (activity as LoginActivity).isLoading(false)
                 }
                 override fun onResponse(
                     call: Call<LoginResponse>,
@@ -45,10 +41,11 @@ class LoginInteractor : LoginInteractorInput {
                     Log.d(TAG, response.body()?.error.toString())
                     if(response.body()?.error?.code == null){
                         Log.d(TAG, "autenticado")
-                        AuthPreferences(context).setUserAccount(response.body()?.userAccount!!)
-                        val savedUser = AuthPreferences(context).getUserAccount()
+                        AuthPreferences(activity.baseContext).setUserAccount(response.body()?.userAccount!!)
+                        val savedUser = AuthPreferences(activity.baseContext).getUserAccount()
                         Log.d(TAG, savedUser.toString())
-                        AuthPreferences(context).navigateToHome(context)
+                        activity.isLoading(false)
+                        AuthPreferences(activity.baseContext).navigateToHome(activity.baseContext)
                     }
                 }
             })
